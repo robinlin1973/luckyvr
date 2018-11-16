@@ -7,13 +7,7 @@
            return vars
         }
 
-        function clickMarker(marker,place_id){
-//            if(marker){
-//                <!--location.assign("/fetch_vr/" + place_id);-->
-//                location.assign("/matterport/" + marker.title);
-//            }else{
-//                alert("no valid marker")
-//            }
+        function clickMarker(marker){
                 window.location.href = marker.url;
         }
 
@@ -28,7 +22,7 @@
                 if (status == 'OK') {
                     place_id = JSON.stringify(results[0]["place_id"]);
                     place_id = place_id.replace(/^"(.*)"$/, '$1');
-                    marker.addListener('click', function(){clickMarker(marker,place_id)});
+                    marker.addListener('click', function(){clickMarker(marker)});
                 }else {
                     alert('Geocode was not successful for the following reason: ' + status);
                 }
@@ -96,18 +90,13 @@
 
 
         function initAutocomplete(){
-//            loc = get_para(locationString);
-//            place_id = loc.place_id;
-//            lat = parseFloat(loc.lat);
-//            lng = parseFloat(loc.lng);
-
             place_id = "ChIJJdxLbfBHDW0Rh5OtgMO10QI";
             lat = -36.8942359;
             lng = 174.7819203;
 
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: lat,lng: lng},
-                zoom: 13,
+                zoom: 12,
                 mapTypeId: 'roadmap',
                 disableDoubleClickZoom : true,
                 fullscreenControl: false,
@@ -126,36 +115,36 @@
             });
 
             latlng = new google.maps.LatLng(lat, lng);
-//            marker = new google.maps.Marker({map: map,icon: icon,title: place_id,position: latlng});
 
-            var icon = new google.maps.MarkerImage("/static/resources/img/bnb.png",null,null,null, new google.maps.Size(70, 70));
+            var res_icon = new google.maps.MarkerImage("/static/resources/img/bnb.png",null,null,null, new google.maps.Size(70, 70));
+            var boat_icon = new google.maps.MarkerImage("/static/resources/img/boat.png",null,null,null, new google.maps.Size(40, 40));
+            var com_icon = new google.maps.MarkerImage("/static/resources/img/dollar.png",null,null,null, new google.maps.Size(40, 40));
+            var icon;
+            for (var i=0;i<markers_data.length;i++){
+                row = markers_data[i];
+                console.log(row['lat']);
+                console.log(row['lng']);
+                console.log(row['mlink']);
+                console.log(row['address']);
+                if (row['listing_type'].includes("com")){
+                    icon = com_icon;
+                }else if (row['listing_type'].includes("boat")){
+                    icon = boat_icon;
+                }else{
+                    icon = res_icon;
+                }
 
-            latlng1 = new google.maps.LatLng(-36.8821759, 174.77358950000007);
-            marker1 = new google.maps.Marker({
-                map: map,icon:icon,title: "Bracken Ave",position: latlng1,
-                url: "https://my.matterport.com/show/?m=eguC3mzt8XJ"
-            });
-            markers.push(marker1)
+                latlng = new google.maps.LatLng(parseFloat(row['lat']), parseFloat(row['lng']));
+                marker = new google.maps.Marker({
+                    map: map,icon:icon,title: row['address'],position: latlng,
+                    url: row['mlink']
+                });
 
-            latlng2 = new google.maps.LatLng(-36.9077891,174.81203219999998);
-            icon = new google.maps.MarkerImage("/static/resources/img/dollar.png",null,null,null, new google.maps.Size(40, 40));
-            marker2 = new google.maps.Marker({
-                map: map,icon: icon,title: "Flua Lighting",position: latlng2,
-                url:"https://my.matterport.com/show/?m=J6dSGbJtQgv"
-            });
-            markers.push(marker2)
-
-            latlng3 = new google.maps.LatLng(-36.868844, 174.812509);
-            icon = new google.maps.MarkerImage("/static/resources/img/boat.png",null,null,null, new google.maps.Size(40, 40));
-            marker3 = new google.maps.Marker({
-                map: map,icon: icon,title: "Boat - Soprano",position: latlng3,
-                url:"https://my.matterport.com/show/?m=TZk1tmoctNc"
-            });
-            markers.push(marker3)
-
-            marker1.addListener('click', function(){clickMarker(marker1,place_id)})
-            marker2.addListener('click', function(){clickMarker(marker2,place_id)})
-            marker3.addListener('click', function(){clickMarker(marker3,place_id)})
+                google.maps.event.addListener(marker, 'click', function() {
+                    window.location.href = this.url;
+                });
+                markers.push(marker)
+            }
 
             map.addListener('dblclick', function(e) {
                 marker.setMap(null);
