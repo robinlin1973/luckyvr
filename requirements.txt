@@ -24,7 +24,7 @@ envs==1.2.6
 Flask==0.12.4
 Flask-Admin==1.5.2
 Flask-Bootstrap==3.3.7.1
-Flask-Cors==3.0.3
+Flask-Cors==3.0.9
 flask-googlemaps==0.2.6
 Flask-Login==0.4.1
 flask-mail==0.9.1
